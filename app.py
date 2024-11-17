@@ -49,6 +49,7 @@ async def handle_unexpected_input(update: Update, context: CallbackContext):
 
 async def start(update: Update, context: CallbackContext):
     await update.message.reply_text("Welcome! Please enter your name")
+    context.user_data["started"] = True
     return ASK_ALIAS
 
 
