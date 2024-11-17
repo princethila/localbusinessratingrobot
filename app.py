@@ -140,10 +140,6 @@ async def cancel(update: Update, context: CallbackContext):
 def main():
     application = Application.builder().token(TELEGRAM_TOKEN).build()
 
-    unexpected_input_handler = MessageHandler(
-        filters.TEXT & ~filters.COMMAND, handle_unexpected_input)
-    application.add_handler(unexpected_input_handler)
-
     conv_handler = ConversationHandler(
         entry_points=[CommandHandler("start", start)],
         states={
@@ -158,6 +154,11 @@ def main():
     )
 
     application.add_handler(conv_handler)
+
+    unexpected_input_handler = MessageHandler(
+        filters.TEXT & ~filters.COMMAND, handle_unexpected_input)
+    application.add_handler(unexpected_input_handler)
+
     application.run_polling()
 
 
