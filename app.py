@@ -33,10 +33,18 @@ TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
 print(TELEGRAM_TOKEN)
 
 
-SELECT_BUSINESS, SELECT_BUSINESS_CHOICE, GET_RATING, GET_REVIEW = range(4)
+ASK_ALIAS, SELECT_BUSINESS, SELECT_BUSINESS_CHOICE, GET_RATING, GET_REVIEW = range(
+    5)
 
 
 async def start(update: Update, context: CallbackContext):
+    await update.message.reply_text("Welcome! Please enter your name")
+    return ASK_ALIAS
+
+
+async def ask_alias(update: Update, context: CallbackContext):
+    user_alias = update.message.text
+    context.user_data["user_alias"] = user_alias
     await update.message.reply_text("Welcome! Please enter the name of the business you'd like to review.")
     return SELECT_BUSINESS
 
@@ -98,13 +106,15 @@ async def get_review(update: Update, context: CallbackContext):
     user_id = update.message.from_user.id
     business_id = context.user_data["business_id"]
     rating = context.user_data["rating"]
+    user_alias = context.user_data["user_alias"]
 
     # Insert review into Supabase
     supabase.table("reviews").insert({
         "user": str(user_id),
         "business_id": business_id,
         "rating": rating,
-        "review_text": review_text
+        "review_text": review_text,
+        "user_alias": user_alias
     }).execute()
 
     await update.message.reply_text("Your review has been submitted. Thank you!")
@@ -122,6 +132,8 @@ def main():
     conv_handler = ConversationHandler(
         entry_points=[CommandHandler("start", start)],
         states={
+            ASK_ALIAS: [MessageHandler(
+                filters.TEXT & ~filters.COMMAND, ask_alias)],
             SELECT_BUSINESS: [MessageHandler(filters.TEXT & ~filters.COMMAND, select_business)],
             SELECT_BUSINESS_CHOICE: [MessageHandler(filters.TEXT & ~filters.COMMAND, handle_business_choice)],
             GET_RATING: [MessageHandler(filters.TEXT & ~filters.COMMAND, get_rating)],
