@@ -39,9 +39,12 @@ ASK_ALIAS, SELECT_BUSINESS, SELECT_BUSINESS_CHOICE, GET_RATING, GET_REVIEW = ran
 
 async def handle_unexpected_input(update: Update, context: CallbackContext):
     # Send a friendly message and remind the user to start with /start
-    await update.message.reply_text(
-        "Hi! To get started, please use /start."
-    )
+    if "started" not in context.user_data:
+        await update.message.reply_text(
+            "Hi! To get started, please use /start."
+        )
+    else:
+        pass
 
 
 async def start(update: Update, context: CallbackContext):
