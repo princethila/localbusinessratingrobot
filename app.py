@@ -37,6 +37,13 @@ ASK_ALIAS, SELECT_BUSINESS, SELECT_BUSINESS_CHOICE, GET_RATING, GET_REVIEW = ran
     5)
 
 
+async def handle_unexpected_input(update: Update, context: CallbackContext):
+    # Send a friendly message and remind the user to start with /start
+    await update.message.reply_text(
+        "Hi! To get started, please use /start."
+    )
+
+
 async def start(update: Update, context: CallbackContext):
     await update.message.reply_text("Welcome! Please enter your name")
     return ASK_ALIAS
@@ -128,6 +135,10 @@ async def cancel(update: Update, context: CallbackContext):
 
 def main():
     application = Application.builder().token(TELEGRAM_TOKEN).build()
+
+    unexpected_input_handler = MessageHandler(
+        filters.TEXT & ~filters.COMMAND, handle_unexpected_input)
+    application.add_handler(unexpected_input_handler)
 
     conv_handler = ConversationHandler(
         entry_points=[CommandHandler("start", start)],
