@@ -45,7 +45,7 @@ async def start(update: Update, context: CallbackContext):
 async def ask_alias(update: Update, context: CallbackContext):
     user_alias = update.message.text
     context.user_data["user_alias"] = user_alias
-    await update.message.reply_text("Welcome! Please enter the name of the business you'd like to review.")
+    await update.message.reply_text("Please enter the name of the business you'd like to review.")
     return SELECT_BUSINESS
 
 
